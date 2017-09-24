@@ -1,127 +1,86 @@
-set_a_string = ['0.866', '-0.166i', '0.333j', '0.333k']
-#set_b_string = ['2', '3i', '0', '0']
-#set_a_string = [['0.8662', '0.166i3i', '0.333j0', '0.333k0'], ['0.166i2', '0.8663i', '0.333j0', '-0.333k0'], ['0.8660', '-0.166i0', '0.333j2', '0.333k3i'], ['0.8660', '0.166i0', '-0.333j3i', '0.333k2']]
-set_b_string = ['0.866', '-0.166i', '-0.333j', '-0.333k']
-#set_a_string = [[0.866, '~'], [-0.166, 'ib'], [0.333, 'jc'], [0.333, 'kd']]
-#set_b_string = [[0.866, '~'], [-0.166, 'if'], [0.333, 'jg'], [0.333, 'kh']]
-def seperate_string(string_val):
-	lookup = ['i', 'j', 'k']
-	for index, bit in enumerate(string_val):
-		if bit in lookup:
-			str_index = index
-		else:
-			str_index = '~'
+import math
 
-	if str_index is '~':
+quaternion_a = [0.866, -0.166, 0.333, 0.333]
+quaternion_b = [0.866, -0.166, -0.333, -0.333]
 
-			variable = [float(string_val), str_index]
-			return variable
-	else:
-		try:
-			variable = [float(string_val[:str_index]), string_val[str_index]]
-			return variable
+def multiply_quaternion(quaternion_a, quaternion_b):
 
-		except:
-			variable = 'Something in the string cannot be turned into numbers'
-			return variable
-	
-
-
-def add_quaternions(set_a_string, set_b_string):
-	fix_set_a = []
-
-	fix_set_b = []
-
-	solution = []
-	for sets in set_a_string:
-		fix_set_a.append(seperate_string(sets))
-
-	for sets in set_b_string:
-		fix_set_b.append(seperate_string(sets))
-
-	for index, set_a_value in enumerate(fix_set_a):
-		solution_set = [set_a_value[0] + fix_set_b[index][0], set_a_value[1]]
-		solution.append(solution_set)
-	
-	for sets in solution:
-		for sub_set in sets:
-			if sub_set == '~':
-				sets.remove(sub_set)
-
-	return solution	
-
-def multiply_single_quaternion(set_a_string, set_b_string):
-	# first set is multiplied by scalar, second set by i, third by j, fourth by k. Do the neccesary conversion
 	identity_table = {'ij':'k', 'jk':'i', 'ki':'j', 'ji':'-k', 'kj':'-i', 'ik':'-j', 'ii': -1, 'jj': -1, 'kk': -1}
-	fix_set_a = []
-
-	fix_set_b = []
-
-	solution_set = []
-
-	complex_set = []
-
-	return_quaternion = []
-
-	for sets in set_a_string:
-		fix_set_a.append(seperate_string(sets))
-
-	for sets in set_b_string:
-		fix_set_b.append(seperate_string(sets))
 	
+	product = []
+
+	for q_b_num in quaternion_b:
+		for q_a_num in quaternion_a:
+			value = q_a_num * q_b_num
+			product.append(value)
+
+	real_num = [product[0] + (-product[5]) + (-product[10]) + (-product[15])]
+	i_num = [product[1] + product[4] + product[11] + (-product[14])]
+	j_num = [product[2] + (-product[7]) + product[8] + product[13]]
+	k_num = [product[3] + product[6] + (-product[9]) + product[12]]
 	
-	for set_b_value in fix_set_b:
-		for set_a_value in fix_set_a:
-			val_a = set_a_value[0] * set_b_value[0]
-			val_b = set_a_value[1] + set_b_value[1]
-			solution_set.append([val_a, val_b])
+	return [real_num[0], i_num[0], j_num[0], k_num[0]]
 
-	for sets in solution_set:
-		for sub_set in sets:
-			if sub_set == '~~':
-				sets.remove(sub_set)
 
-	for sets in solution_set:
-		if len(sets) > 1:
-			if '~' in sets[1]:
-				new_string = sets[1].replace('~', '')
-				sets[1] = new_string
+def add_quaternions(quaternion_a, quaternion_b):
 
-	for sets in solution_set:
-		if len(sets)>1:
-			for key, val in identity_table.iteritems():
-				if sets[1] == key:
-					sets[1] = val
+	answer = []
 
-			
-	for sets in solution_set:
-		if len(sets)>1:
-			if isinstance(sets[1], int):
-				sets = [sets[0] * sets[1], sets[1]]
-			else:
-				if '-' in sets[1]:
-					sets = [sets[0]*-1, sets[1][-1]]
-				else:
-					sets = [sets[0], sets[1]]
-			complex_set.append(sets)
-		else:
-			sets = [sets[0]]
-			complex_set.append(sets)
-	'''
-	bugfix sequence
-	for index, item in enumerate(complex_set):
-		if len(item)>1:
-			if item[1] == 'k':
-				print index
-	'''
-	return_set_real = [complex_set[0][0] + complex_set[5][0] + complex_set[10][0] + complex_set[15][0]]
-	return_set_i = [complex_set[1][0] + complex_set[4][0] + complex_set[11][0] + complex_set[14][0], 'i']
-	return_set_j = [complex_set[2][0] + complex_set[7][0] + complex_set[8][0] + complex_set[13][0], 'j']
-	return_set_k = [complex_set[3][0] + complex_set[6][0] + complex_set[9][0] + complex_set[12][0], 'k']
+	for index, q_a_values in enumerate(quaternion_a):
+		q_sum = q_a_values + quaternion_b[index]
+		answer.append(q_sum)
+
+	return answer
+
+
+def normalize_vector(vector):
+
+	squares = []
+
+	for numbers in vector:
+		new_num = numbers**2
+		squares.append(new_num)
+
+	denominator = math.sqrt(sum(squares))
+
+	return [j/denominator for j in vector] 
+
+
+def dir_to_quat(vector, angle):
+
+	norm_vector = normalize_vector(vector)
+
+	complex_number = [i*math.sin(math.radians(angle/2)) for i in norm_vector]
+
+	scalar = math.cos(math.radians(angle/2))
+
+	return [scalar] + complex_number
+
+def conjugate(quaternion):
+
+	conjugated = [quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]]
+
+	return conjugated
+
+def rotate(axis_of_rotation, angle, vector_to_rotate):
+
+	q = dir_to_quat(axis_of_rotation, angle)
+
+	p = [0] + vector_to_rotate
+
+	q_conjugate = conjugate(q)
+
+	# q * p * q(conjugate)
+
+	q_b = multiply_quaternion(q, p)
+
+	solution = multiply_quaternion(q_b, q_conjugate)
 	
-	return_quaternion = [return_set_real, return_set_i, return_set_j, return_set_k]
+	return solution[1:]
 	
-	return return_quaternion
 
+#print normalize_vector([1, 2, 2])
 
-print multiply_single_quaternion(set_a_string, set_b_string)
+#print multiply_quaternion(quaternion_a, quaternion_b)
+
+print rotate([1,2,2], 60, [2, 3, 0])
