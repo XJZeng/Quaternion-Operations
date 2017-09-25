@@ -1,8 +1,5 @@
 import math
 
-quaternion_a = [0.866, -0.166, 0.333, 0.333]
-quaternion_b = [0.866, -0.166, -0.333, -0.333]
-
 def multiply_quaternion(quaternion_a, quaternion_b):
 
 	identity_table = {'ij':'k', 'jk':'i', 'ki':'j', 'ji':'-k', 'kj':'-i', 'ik':'-j', 'ii': -1, 'jj': -1, 'kk': -1}
